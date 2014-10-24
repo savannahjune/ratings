@@ -51,3 +51,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    engine = create_engine("sqlite:///ratings.db", echo=True)
+    Base.metadata.create_all(engine)
