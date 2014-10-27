@@ -5,10 +5,15 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 
-ENGINE = None
-Session = None
+engine = None
+session = None
 
+engine = create_engine("sqlite:///ratings.db", echo=False)
+session = scoped_session(sessionmaker(bind=engine,
+                                      autocommit = False,
+                                      autoflush = False))
 Base = declarative_base()
+Base.query = session.query_property()
 
 ### Class declarations go here
 class User(Base):
@@ -43,14 +48,11 @@ class Rating(Base):
 
 ### End class declarations
 
-def connect():
-    global ENGINE
-    global Session
+# def connect():
+#     global ENGINE
+#     global Session
 
-    ENGINE = create_engine("sqlite:///ratings.db", echo=True)
-    Session = sessionmaker(bind=ENGINE)
-
-    return Session()
+#     return Session()
 
 def main():
     """In case we need this for something"""
@@ -58,5 +60,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    engine = create_engine("sqlite:///ratings.db", echo=True)
     Base.metadata.create_all(engine)
