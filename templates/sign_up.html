@@ -27,6 +27,16 @@
     </head>
 
     <body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+            <p style = "color:red"><bold>{{ message }}</bold></p>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}  
+
         <h1>
             Sign up to rate movies!!! WOOO!!
         </h1>
