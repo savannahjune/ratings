@@ -31,15 +31,18 @@
             Sign up to rate movies!!! WOOO!!
         </h1>
 
-        <form class="form-signin" role="form">
+        <form class="form-signin" role="form" method="POST">
         <h2 class="form-signin-heading">Please sign up</h2>
-        <input type="email" class="form-control" placeholder="Email address" required autofocus>
-        <input type="password" class="form-control" placeholder="Password" required>
-        <input type="age" class="form-control" placeholder="Age">
-        <input type="zipcode" class="form-control" placeholder="Zipcode">
+        <input type="email" name="email" class="form-control" placeholder="Email address" required autofocus>
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
+        <input type="age" name="age" class="form-control" placeholder="Age">
+        <input type="zipcode" name="zipcode" class="form-control" placeholder="Zipcode">
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
       </form>
 
+        <form action="/login">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Already a User? Log in here.</button>
+        </form>
 
 
 
