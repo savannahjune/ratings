@@ -39,7 +39,7 @@ def index():
         u = dbsession.query(User).filter_by(email = email).one()
         if u.password == password:
             session["login"] = u.id
-            return render_template("main.html")  
+            return redirect("/main")  
         else:
             flash("Wrong password please try again.")
             return redirect("/login")    
@@ -50,6 +50,42 @@ def index():
 @app.route("/main")
 def main():
     return render_template("main.html")
+
+@app.route("/main", methods=["POST"])
+def search():
+    movie = request.form.get("movie")
+    movie_info = dbsession.query(Movie).filter_by(name = movie).first()
+    release_date = movie_info.release_date
+    imdb_url = movie_info.imdb_url
+    ratings = movie_info.ratings
+    return render_template("movie_info.html", ratings = ratings, movie = movie, release_date = release_date, imdb_url = imdb_url)
+
+@app.route("/user_id/<int:id>")
+def find_user_ratings(id):
+    ratings = dbsession.query(Rating).filter_by(user_id = id).all()
+    return render_template("/user_ratings.html", ratings = ratings, user_id = id)
+
+@app.route("/my_reviews")
+def my_reviews():
+    user_id = session["login"]
+    ratings = dbsession.query(Rating).filter_by(user_id = user_id).all()
+    return render_template("my_reviews.html", user_id = user_id, ratings = ratings)
+
+@app.route("/add_review")
+def add():
+    return render_template("add_review.html")
+
+@app.route("/add_review", methods=["POST"])
+def add_review():
+    movie = request.form.get("movie")
+    movie_id = dbsession.query(Movie).filter_by(name = movie).first().id
+    rating = request.form.get("rating")
+    rating = Rating(movie_id = movie_id, user_id = session["login"], rating = rating)
+    dbsession.add(rating)
+    dbsession.commit()
+    return render_template("main.html")
+        
+
 
 
 if __name__ == "__main__":

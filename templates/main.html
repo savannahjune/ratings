@@ -31,14 +31,15 @@
 
 <body>
 
- <form class="form-signin" role="form" method="GET">
-        <h2 class="form-signin-heading">Search for a Movie</h2>
-        <input type="movie" name="movie" class="form-control" placeholder="Movie" required autofocus>
+ <form role="form" method="POST">
+        <h2>Search for a Movie</h2>
+        <input type="movie" name="movie" placeholder="Movie" required autofocus>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Search</button>
       </form>
       <br>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">View My Reviews</button>
+      <a href="/my_reviews"><button class="btn btn-lg btn-primary btn-block" type="submit">View My Reviews</button></a>
+     
       <br>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Make a New Rating!</button>
+      <a href="/add_review"><button class="btn btn-lg btn-primary btn-block" type="submit">Make a New Rating!</button></a>
 
 </body>
