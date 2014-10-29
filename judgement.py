@@ -3,7 +3,6 @@ from model import User, Movie, Rating, session as dbsession
 import jinja2
 
 
-
 app = Flask(__name__)
 app.secret_key ='alkjgfladjflkajdoiwelfkasdg;ljkasdfljk'
 # app.jinja_env.undefined = jinja2.StrictUndefined

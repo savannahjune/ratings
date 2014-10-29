@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
+import correlation
 
 engine = None
 session = None
@@ -24,6 +25,20 @@ class User(Base):
     password = Column(String(64), nullable=True)
     age = Column(Integer, nullable=True)
     zipcode = Column(String(15), nullable=True)
+
+    def similarity (user1, user2):
+        user1_dict = {}
+        pair_list = []
+        for r in user1.ratings:
+            user1_dict[r.movie_id] = r
+        for r in user2.ratings:
+            user1_rating = user1_dict.get(r.movie_id)
+            if user1_rating:
+                pair_list.append( (r.rating, user1_rating.rating) )
+        if pair_list:
+            return correlation.pearson(pair_list)
+        else:
+            return 0.0
 
 class Movie(Base):
     __tablename__ = "movies"
