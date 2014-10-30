@@ -40,6 +40,19 @@ class User(Base):
         else:
             return 0.0
 
+    def predict_rating(self, movie):
+        ratings = self.ratings
+        other_ratings = movie.ratings
+        similarities = [ (movie.similarity(r.movie), r)
+            for r in other_ratings ]
+        similarities.sort(reverse = True)
+        similarities = [ sim for sim in similarities if sim[0] > 0 ]
+        if not similarities:
+            return None
+        numerator = sum([ r.rating * similarity for similarity, r in similarities ])
+        denominator = sum([ similarity[0] for similarity in similarities ])
+        return numerator/denominator
+
 class Movie(Base):
     __tablename__ = "movies"
 
@@ -47,6 +60,20 @@ class Movie(Base):
     name = Column(String(100), nullable=False)
     release_date = Column(DateTime(30), nullable=True)
     imdb_url = Column(String(300), nullable=True)
+
+    def similarity (self, movie2):
+        self_dict = {}
+        pair_list = []
+        for r in self.ratings:
+            self_dict[r.user_id] = r
+        for r in movie2.ratings:
+            self_rating = self_dict.get(r.user_id)
+            if self_rating:
+                pair_list.append( (r.rating, self_rating.rating) )
+        if pair_list:
+            return correlation.pearson(pair_list)
+        else:
+            return 0.0     
 
 class Rating(Base):
     __tablename__ = "ratings"

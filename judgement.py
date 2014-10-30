@@ -82,6 +82,28 @@ def add_review():
     dbsession.add(rating)
     dbsession.commit()
     return render_template("main.html")
+
+@app.route("/movie/<int:id>", methods = ["GET"])
+def view_movie(id):
+    movie = dbsession.query(Movie).get(id)
+    ratings = movie.ratings
+    rating_nums = []
+    user_rating = None
+    for r in ratings:
+        if r.user_id == session["login"]:
+            user_rating = r
+        rating_nums.append(r.rating)
+    avg_rating = float(sum(rating_nums))/len(rating_nums)
+
+    #prediction code: only predict if the user hasn't rated it
+    user = dbsession.query(User).get(session['user_id'])
+    prediction = None
+    if not user_rating:
+        prediction = user.predict_rating(movie)
+    #End Prediction
+
+    return render_template("movie.html", movie = movie, average = avg_rating, user_rating = user_rating, prediction = prediction)
+
         
 
 
