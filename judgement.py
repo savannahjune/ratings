@@ -71,8 +71,33 @@ def search():
     if not user_rating:
         prediction = user.predict_rating(movie_info)
     #End Prediction
-    return render_template("movie_info.html", user_rating = user_rating, prediction = prediction, ratings = ratings, average = avg_rating, movie = movie, release_date = release_date, imdb_url = imdb_url)
 
+    user = dbsession.query(User).get(session['login'])
+    prediction = None
+    if not user_rating:
+        prediction = user.predict_rating(movie_info)
+        effective_rating = prediction
+    else:
+        effective_rating = user_rating.rating 
+
+    the_eye = dbsession.query(User).filter_by(email="theeye@ofjudgement.com").one()
+    eye_rating = dbsession.query(Rating).filter_by(user_id=the_eye.id, movie_id=movie_info.id).first()
+
+    if not eye_rating:
+        eye_rating = the_eye.predict_rating(movie_info)
+    else:
+        eye_rating = eye_rating.rating
+
+    difference = abs(eye_rating - effective_rating)
+
+    messages = [ "I suppose you don't have such bad taste after all.",
+                 "I regret every decision that I've ever made that has brought me to listen to your opinion",
+                  "Words fail me, as your taste in movies has clearly failed you.",
+                  "That movie is great. For a clown to watch. Idiot."]
+
+    beratement = messages[int(difference)]
+
+    return render_template("movie_info.html", beratement = beratement, user_rating = user_rating, prediction = prediction, ratings = ratings, average = avg_rating, movie = movie, release_date = release_date, imdb_url = imdb_url)
 
 
 @app.route("/user_id/<int:user_id>")

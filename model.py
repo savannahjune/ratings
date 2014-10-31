@@ -41,6 +41,7 @@ class User(Base):
             return 0.0
 
     def predict_rating(self, movie):
+        #movie_info is the movie object
         ratings = self.ratings
         other_ratings = movie.ratings
         similarities = [ (movie.similarity(r.movie), r)
@@ -52,6 +53,7 @@ class User(Base):
         numerator = sum([ r.rating * similarity for similarity, r in similarities ])
         denominator = sum([ similarity[0] for similarity in similarities ])
         return numerator/denominator
+
 
 class Movie(Base):
     __tablename__ = "movies"
