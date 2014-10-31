@@ -32,10 +32,14 @@
   <h1>Movie Stats for: {{ movie }}</h1>
     <ul>
       <li> Released on: {{ release_date }} </li>
-      <li> IMDB: {{ imdb_url }} </li>
-    </ul>  
+      <li> IMDB: {{ imdb_url }} </li> 
 
-
+{% if user_rating %}
+  <li>This is your rating of {{movie}}: {{user_rating.rating}}</li>
+{%else%}
+  <li>This is your predicted rating of {{movie}}: {{prediction}}</li>
+{% endif %}
+ </ul>  
 <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading">Ratings</div>

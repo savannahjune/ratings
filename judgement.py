@@ -51,11 +51,29 @@ def main():
 @app.route("/main", methods=["POST"])
 def search():
     movie = request.form.get("movie")
+    # movie = dbsession.query(Movie).get(id)
     movie_info = dbsession.query(Movie).filter_by(name = movie).first()
     release_date = movie_info.release_date
     imdb_url = movie_info.imdb_url
     ratings = movie_info.ratings
-    return render_template("movie_info.html", ratings = ratings, movie = movie, release_date = release_date, imdb_url = imdb_url)
+    movie_ratings = movie_info.ratings
+    rating_nums = []
+    user_rating = None
+    for r in movie_ratings:
+        if r.user_id == session["login"]:
+            user_rating = r
+        rating_nums.append(r.rating)
+    avg_rating = float(sum(rating_nums))/len(rating_nums)
+
+    #prediction code: only predict if the user hasn't rated it
+    user = dbsession.query(User).get(session['login'])
+    prediction = None
+    if not user_rating:
+        prediction = user.predict_rating(movie_info)
+    #End Prediction
+    return render_template("movie_info.html", user_rating = user_rating, prediction = prediction, ratings = ratings, average = avg_rating, movie = movie, release_date = release_date, imdb_url = imdb_url)
+
+
 
 @app.route("/user_id/<int:user_id>")
 def find_user_ratings(user_id):
@@ -83,26 +101,26 @@ def add_review():
     dbsession.commit()
     return render_template("main.html")
 
-@app.route("/movie/<int:id>", methods = ["GET"])
-def view_movie(id):
-    movie = dbsession.query(Movie).get(id)
-    ratings = movie.ratings
-    rating_nums = []
-    user_rating = None
-    for r in ratings:
-        if r.user_id == session["login"]:
-            user_rating = r
-        rating_nums.append(r.rating)
-    avg_rating = float(sum(rating_nums))/len(rating_nums)
+# @app.route("/main/<int:id>", methods = ["GET"])
+# def view_movie(id):
+#     movie = dbsession.query(Movie).get(id)
+#     ratings = movie.ratings
+#     rating_nums = []
+#     user_rating = None
+#     for r in ratings:
+#         if r.user_id == session["login"]:
+#             user_rating = r
+#         rating_nums.append(r.rating)
+#     avg_rating = float(sum(rating_nums))/len(rating_nums)
 
-    #prediction code: only predict if the user hasn't rated it
-    user = dbsession.query(User).get(session['user_id'])
-    prediction = None
-    if not user_rating:
-        prediction = user.predict_rating(movie)
-    #End Prediction
+#     #prediction code: only predict if the user hasn't rated it
+#     user = dbsession.query(User).get(session['user_id'])
+#     prediction = None
+#     if not user_rating:
+#         prediction = user.predict_rating(movie)
+#     #End Prediction
 
-    return render_template("movie.html", movie = movie, average = avg_rating, user_rating = user_rating, prediction = prediction)
+#     return render_template("movie_info.html", movie = movie, average = avg_rating, user_rating = user_rating, prediction = prediction)
 
         
 
